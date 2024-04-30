@@ -5,10 +5,12 @@ name: TEST-ROBOT
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  # push:
+  #   branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
+  schedule:
+    - cron: '*/5 * * * *'  # 每5分钟执行一次
 
 env:
   BRANCH: 28-new
@@ -51,11 +53,9 @@ jobs:
         else
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          if git status --porcelain | grep -q "^ M previous_commit_id.txt"; then
-            git add previous_commit_id.txt
-            git commit -m "Update previous commit ID"
-            git push origin main
-          fi
+          git add previous_commit_id.txt
+          git commit -m "Update previous commit ID"
+          git push origin main
         fi
 
     - name: system resources
