@@ -21,11 +21,12 @@ jobs:
     steps:
     - name: clone lance repo
       run: |      
-        git clone -v https://github.com/ioworker0/linux.git
-        cd linux
-        git checkout 28-new && git pull
-        make ARCH=x86_64 mrproper
-        make ARCH=x86_64 allnoconfig
-        export ARCH=x86_64
-        make olddefconfig
-        make -j$(nproc)
+        apt-cache search aarch64|grep gcc
+        # git clone -v https://github.com/ioworker0/linux.git
+        # cd linux
+        # git checkout 28-new && git pull
+        # make ARCH=x86_64 mrproper
+        # make ARCH=x86_64 allnoconfig
+        # export ARCH=x86_64
+        # make olddefconfig
+        # make -j$(nproc)
