@@ -56,7 +56,7 @@ jobs:
       id: write-result-to-file
       run: |
         source output.env
-        cat $PREVIOUS_COMMIT_ID > previous_commit_id.txt
+        cat $LATEST_COMMIT_ID > previous_commit_id.txt
     
     - name: commit and push changes
       run: |
