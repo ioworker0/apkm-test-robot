@@ -14,6 +14,7 @@ on:
 
 env:
   BRANCH: 28-new
+  TMP_ENV: /tmp/output.env
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -35,19 +36,19 @@ jobs:
     - name: read previous commit ID
       id: read-previous-commit-id
       run: |
-        echo "PREVIOUS_COMMIT_ID=$(cat previous_commit_id.txt)" > output.env
-        echo $(cat output.env)
+        echo "PREVIOUS_COMMIT_ID=$(cat previous_commit_id.txt)" > ${{ env.TMP_ENV }}
+        echo $(cat ${{ env.TMP_ENV }})
 
     - name: get latest commit ID
       id: get-latest-commit-id
       run: |
-        echo "LATEST_COMMIT_ID=$(git ls-remote https://github.com/ioworker0/linux.git refs/heads/${{ env.BRANCH }} | awk '{print $1}')" >> output.env
-        echo $(cat output.env)
+        echo "LATEST_COMMIT_ID=$(git ls-remote https://github.com/ioworker0/linux.git refs/heads/${{ env.BRANCH }} | awk '{print $1}')" >> ${{ env.TMP_ENV }}
+        echo $(cat ${{ env.TMP_ENV }})
         echo $LATEST_COMMIT_ID > previous_commit_id.txt
     
     - name: commit and push changes
       run: |
-        source output.env
+        source ${{ env.TMP_ENV }}
         if [ "$PREVIOUS_COMMIT_ID" = "$LATEST_COMMIT_ID" ]; then
           echo "Commit ID has not changed. No action needed :P"
         else
@@ -67,7 +68,7 @@ jobs:
 
     - name: clone lance repo
       run: |   
-        source output.env
+        source ${{ env.TMP_ENV }}
         if [ "$PREVIOUS_COMMIT_ID" != "$LATEST_COMMIT_ID" ]; then
           git clone -v https://github.com/ioworker0/linux.git
           cd linux && git checkout ${{ env.BRANCH }} && git pull && cd ..
@@ -78,7 +79,7 @@ jobs:
           
     - name: build kernel
       run: |  
-        source output.env
+        source ${{ env.TMP_ENV }}
         if [ "$PREVIOUS_COMMIT_ID" != "$LATEST_COMMIT_ID" ]; then
           cd linux
           make ARCH=arm64 mrproper
