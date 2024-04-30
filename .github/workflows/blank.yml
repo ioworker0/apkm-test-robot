@@ -10,6 +10,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  BRANCH: 28-new
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -39,23 +42,8 @@ jobs:
     - name: get latest commit ID
       id: get-latest-commit-id
       run: |
-        echo "LATEST_COMMIT_ID=$(git ls-remote https://github.com/ioworker0/linux.git refs/heads/28-new | awk '{print $1}')" >> output.env
+        echo "LATEST_COMMIT_ID=$(git ls-remote https://github.com/ioworker0/linux.git refs/heads/${{ env.BRANCH }} | awk '{print $1}')" >> output.env
         echo $(cat output.env)
-    
-    - name: compare commit IDs
-      id: compare-commit-ids
-      run: |
-        source output.env
-        if [ "$PREVIOUS_COMMIT_ID" = "$LATEST_COMMIT_ID" ]; then
-          echo "RESULT=1" >> output.env
-        else
-          echo "RESULT=2" >> output.env
-        fi
-    
-    - name: write result to file
-      id: write-result-to-file
-      run: |
-        source output.env
         echo $LATEST_COMMIT_ID > previous_commit_id.txt
     
     - name: commit and push changes
@@ -76,18 +64,25 @@ jobs:
         uname -r
         echo $(nproc)
         free -h
+
+    
+    - name: clone lance repo
+      run: |   
+        source output.env
+        if [ "$PREVIOUS_COMMIT_ID" != "$LATEST_COMMIT_ID" ]; then
+          git clone -v https://github.com/ioworker0/linux.git
+        fi
         
-    # - name: clone lance repo
-    #   if: ${{ steps.compare-commit-ids.outputs.result == '2' }}
-    #   run: |      
-    #     git clone -v https://github.com/ioworker0/linux.git
+    - name: build kernel
+      run: |  
+        source output.env
+        if [ "$PREVIOUS_COMMIT_ID" != "$LATEST_COMMIT_ID" ]; then
+          cd linux
+          git checkout ${{ env.BRANCH }} && git pull
+          make ARCH=arm64 mrproper
+          make ARCH=arm64 allnoconfig
+          export ARCH=arm64
+          make olddefconfig
+          make -j$(nproc)
+        fi
         
-    # - name: build kernel
-    #   run: |  
-    #     cd linux
-    #     git checkout 28-new && git pull
-    #     make ARCH=arm64 mrproper
-    #     make ARCH=arm64 allnoconfig
-    #     export ARCH=arm64
-    #     make olddefconfig
-    #     make -j$(nproc)
