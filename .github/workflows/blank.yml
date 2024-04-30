@@ -72,8 +72,8 @@ jobs:
         #   git clone -v https://github.com/ioworker0/linux.git
         # fi
         sudo apt-get install -y gcc-11-aarch64-linux-gnu && \
-        dpkg -L gcc-11-aarch64-linux-gnu && \
-        ln -s /usr/bin/aarch64-linux-gnu-gcc-11 /usr/bin/aarch64-linux-gnu-gcc
+        sudo dpkg -L gcc-11-aarch64-linux-gnu && \
+        sudo ln -s /usr/bin/aarch64-linux-gnu-gcc-11 /usr/bin/aarch64-linux-gnu-gcc
 
         
     - name: build kernel
