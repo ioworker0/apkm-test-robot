@@ -34,7 +34,7 @@ jobs:
     - name: get latest commit ID
       id: get-latest-commit-id
       run: |
-        echo "LATEST_COMMIT_ID=$(git ls-remote https://github.com/ioworker0/linux.git refs/heads/28-new)" > output.env1
+        echo "LATEST_COMMIT_ID=$(git ls-remote https://github.com/ioworker0/linux.git refs/heads/28-new | | awk '{print $1}')" > output.env1
         echo $(cat output.env1)
     
     - name: compare commit IDs
