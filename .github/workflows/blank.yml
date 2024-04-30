@@ -22,10 +22,14 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - name: clone lance repo
+    - name: system resources
       run: |      
         uname -r
         echo $(nproc)
+        free -h
+        
+    - name: clone lance repo
+      run: |      
         git clone -v https://github.com/ioworker0/linux.git
         
     - name: build kernel
