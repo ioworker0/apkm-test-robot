@@ -22,6 +22,9 @@ jobs:
     - name: clone lance repo
       run: |      
         apt-cache search aarch64|grep gcc
+        apt-get install gcc-11-aarch64-linux-gnu
+        dpkg -L gcc-11-aarch64-linux-gnu
+        ln -s /usr/bin/aarch64-linux-gnu-gcc-11 /usr/bin/aarch64-linux-gnu-gcc
         # git clone -v https://github.com/ioworker0/linux.git
         # cd linux
         # git checkout 28-new && git pull
