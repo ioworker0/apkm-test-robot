@@ -19,7 +19,12 @@ jobs:
     strategy:
       matrix:
         arch: [arm64]
-
+        
+    permissions:
+      # Give the default GITHUB_TOKEN write permission.
+      # https://github.blog/changelog/2023-02-02-github-actions-updating-the-default-github_token-permissions-to-read-only/
+      contents: write
+      
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: checkout repository
