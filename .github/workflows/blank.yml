@@ -16,15 +16,15 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [arm64]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: clone lance repo
       run: |      
-        apt-cache search aarch64|grep gcc
-        apt-get install gcc-11-aarch64-linux-gnu
-        dpkg -L gcc-11-aarch64-linux-gnu
-        ln -s /usr/bin/aarch64-linux-gnu-gcc-11 /usr/bin/aarch64-linux-gnu-gcc
+        uname -r
         # git clone -v https://github.com/ioworker0/linux.git
         # cd linux
         # git checkout 28-new && git pull
