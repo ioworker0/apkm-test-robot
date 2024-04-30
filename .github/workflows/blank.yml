@@ -22,22 +22,58 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    - name: checkout repository
+      uses: actions/checkout@v2
+
+    - name: read previous commit ID
+      id: read-previous-commit-id
+      run: echo "::set-output name=previous_commit_id::$(cat previous_commit_id.txt)"
+
+    - name: get latest commit ID
+      id: get-latest-commit-id
+      run: echo "::set-output name=latest_commit_id::$(git ls-remote https://github.com/ioworker0/linux.git refs/heads/28-new)"
+
+    - name: compare commit IDs
+      id: compare-commit-ids
+      run: |
+        previous_commit_id=${{ steps.read-previous-commit-id.outputs.previous_commit_id }}
+        latest_commit_id=${{ steps.get-latest-commit-id.outputs.latest_commit_id }}
+        if [ "$previous_commit_id" = "$latest_commit_id" ]; then
+          echo "::set-output name=result::1"
+        else
+          echo "::set-output name=result::2"
+        fi
+    
+    - name: write result to file
+      id: write-result-to-file
+      run: echo "${{ steps.compare-commit-ids.outputs.result }}" > previous_commit_id.txt
+    
+    - name: commit and push changes
+      if: ${{ steps.compare-commit-ids.outputs.result == '2' }}
+      run: |
+        git config --global user.email "actions@github.com"
+        git config --global user.name "GitHub Actions"
+        git add previous_commit_id.txt
+        git commit -m "Update previous commit ID"
+        git push origin main
+    
     - name: system resources
       run: |      
         uname -r
         echo $(nproc)
         free -h
         
-    - name: clone lance repo
-      run: |      
-        git clone -v https://github.com/ioworker0/linux.git
+    # - name: clone lance repo
+    #   if: ${{ steps.compare-commit-ids.outputs.result == '2' }}
+    #   run: |      
+    #     git clone -v https://github.com/ioworker0/linux.git
         
-    - name: build kernel
-      run: |  
-        cd linux
-        git checkout 28-new && git pull
-        make ARCH=arm64 mrproper
-        make ARCH=arm64 allnoconfig
-        export ARCH=arm64
-        make olddefconfig
-        make -j$(nproc)
+    # - name: build kernel
+    #   run: |  
+    #     cd linux
+    #     git checkout 28-new && git pull
+    #     make ARCH=arm64 mrproper
+    #     make ARCH=arm64 allnoconfig
+    #     export ARCH=arm64
+    #     make olddefconfig
+    #     make -j$(nproc)
