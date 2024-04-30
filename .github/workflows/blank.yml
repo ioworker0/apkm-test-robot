@@ -69,18 +69,19 @@ jobs:
       run: |   
         source output.env
         if [ "$PREVIOUS_COMMIT_ID" != "$LATEST_COMMIT_ID" ]; then
-          git clone -v https://github.com/ioworker0/linux.git
+          # git clone -v https://github.com/ioworker0/linux.git
         fi
+        apt-get install gcc-11-aarch64-linux-gnu
         
     - name: build kernel
       run: |  
         source output.env
         if [ "$PREVIOUS_COMMIT_ID" != "$LATEST_COMMIT_ID" ]; then
-          cd linux
-          git checkout ${{ env.BRANCH }} && git pull
-          make mrproper
-          make allnoconfig
-          make olddefconfig
-          make -j$(nproc)
+          # cd linux
+          # git checkout ${{ env.BRANCH }} && git pull
+          # make mrproper
+          # make allnoconfig
+          # make olddefconfig
+          # make -j$(nproc)
         fi
         
