@@ -62,10 +62,10 @@ jobs:
     - name: system resources
       run: |      
         uname -r
+        uname -m
         echo $(nproc)
         free -h
 
-    
     - name: clone lance repo
       run: |   
         source output.env
@@ -79,9 +79,8 @@ jobs:
         if [ "$PREVIOUS_COMMIT_ID" != "$LATEST_COMMIT_ID" ]; then
           cd linux
           git checkout ${{ env.BRANCH }} && git pull
-          make ARCH=arm64 mrproper
-          make ARCH=arm64 allnoconfig
-          export ARCH=arm64
+          make mrproper
+          make allnoconfig
           make olddefconfig
           make -j$(nproc)
         fi
