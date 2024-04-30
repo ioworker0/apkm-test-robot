@@ -25,11 +25,15 @@ jobs:
     - name: clone lance repo
       run: |      
         uname -r
-        # git clone -v https://github.com/ioworker0/linux.git
-        # cd linux
-        # git checkout 28-new && git pull
-        # make ARCH=x86_64 mrproper
-        # make ARCH=x86_64 allnoconfig
-        # export ARCH=x86_64
-        # make olddefconfig
-        # make -j$(nproc)
+        echo $(nproc)
+        git clone -v https://github.com/ioworker0/linux.git
+        
+    - name: build kernel
+      run: |  
+        cd linux
+        git checkout 28-new && git pull
+        make ARCH=arm64 mrproper
+        make ARCH=arm64 allnoconfig
+        export ARCH=arm64
+        make olddefconfig
+        make -j$(nproc)
