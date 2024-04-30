@@ -27,11 +27,15 @@ jobs:
 
     - name: read previous commit ID
       id: read-previous-commit-id
-      run: echo "PREVIOUS_COMMIT_ID=$(cat previous_commit_id.txt)" > output.env
+      run: |
+        echo "PREVIOUS_COMMIT_ID=$(cat previous_commit_id.txt)" > output.env
+        echo $PREVIOUS_COMMIT_ID
 
     - name: get latest commit ID
       id: get-latest-commit-id
-      run: echo "LATEST_COMMIT_ID=$(git ls-remote https://github.com/ioworker0/linux.git refs/heads/28-new)" >> output.env
+      run: |
+        echo "LATEST_COMMIT_ID=$(git ls-remote https://github.com/ioworker0/linux.git refs/heads/28-new)" >> output.env
+        echo $LATEST_COMMIT_ID
     
     - name: compare commit IDs
       id: compare-commit-ids
