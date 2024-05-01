@@ -1,4 +1,3 @@
-
 name: AKPM-ROBOT-MM-UNSTABLE
 
 on:
@@ -91,7 +90,6 @@ jobs:
           export CROSS_COMPILE="/usr/bin/aarch64-linux-gnu-"
           make olddefconfig
           make -j$(nproc)
-  1 name: MM-ROBOT-TESTING
 
       - name: post-build kernel arm64
         if: env.condition == 'true'
