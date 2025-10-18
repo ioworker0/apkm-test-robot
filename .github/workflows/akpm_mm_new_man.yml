@@ -26,20 +26,21 @@ jobs:
       - name: check against the commit ID
         run: |
           cd robot
-          export PREVIOUS_COMMIT_ID=$(cat ${{ env.BRANCH }}_previous_commit_id.txt)
-          export LATEST_COMMIT_ID=$(git ls-remote ${{ env.REPO }} refs/heads/${{ env.BRANCH }} | awk '{print $1}')
-          if [ "$PREVIOUS_COMMIT_ID" = "$LATEST_COMMIT_ID" ]; then
-            echo "Commit ID has not changed. No action needed :P"
-            echo "condition=false" >> $GITHUB_ENV
-          else
-            echo $LATEST_COMMIT_ID > ${{ env.BRANCH }}_previous_commit_id.txt
-            git config --global user.email "actions@github.com"
-            git config --global user.name "GitHub Actions"
-            git add ${{ env.BRANCH }}_previous_commit_id.txt
-            git commit -m "Update previous commit ID"
-            git push origin main
-            echo "condition=true" >> $GITHUB_ENV
-          fi
+          echo "condition=true" >> $GITHUB_ENV
+          # export PREVIOUS_COMMIT_ID=$(cat ${{ env.BRANCH }}_previous_commit_id.txt)
+          # export LATEST_COMMIT_ID=$(git ls-remote ${{ env.REPO }} refs/heads/${{ env.BRANCH }} | awk '{print $1}')
+          # if [ "$PREVIOUS_COMMIT_ID" = "$LATEST_COMMIT_ID" ]; then
+          #   echo "Commit ID has not changed. No action needed :P"
+          #   echo "condition=false" >> $GITHUB_ENV
+          # else
+          #   echo $LATEST_COMMIT_ID > ${{ env.BRANCH }}_previous_commit_id.txt
+          #   git config --global user.email "actions@github.com"
+          #   git config --global user.name "GitHub Actions"
+          #   git add ${{ env.BRANCH }}_previous_commit_id.txt
+          #   git commit -m "Update previous commit ID"
+          #   git push origin main
+          #   echo "condition=true" >> $GITHUB_ENV
+          # fi
 
       - uses: actions/cache@v4
         if: env.condition == 'true'
@@ -72,31 +73,31 @@ jobs:
         run: |
           cd linux && git pull && git checkout ${{ env.BRANCH }} && git pull
 
-      - name: pre-build kernel arm64
-        if: env.condition == 'true'
-        run: |
-          sudo apt-get update && \
-          sudo apt-get install -y gcc-14-aarch64-linux-gnu && \
-          sudo dpkg -L gcc-14-aarch64-linux-gnu && \
-          sudo ln -s /usr/bin/aarch64-linux-gnu-gcc-14 /usr/bin/aarch64-linux-gnu-gcc
+      # - name: pre-build kernel arm64
+      #   if: env.condition == 'true'
+      #   run: |
+      #     sudo apt-get update && \
+      #     sudo apt-get install -y gcc-14-aarch64-linux-gnu && \
+      #     sudo dpkg -L gcc-14-aarch64-linux-gnu && \
+      #     sudo ln -s /usr/bin/aarch64-linux-gnu-gcc-14 /usr/bin/aarch64-linux-gnu-gcc
 
-      - name: build kernel arm64
-        if: env.condition == 'true'
-        run: |
-          cd linux
-          make ARCH=arm64 mrproper
-          make ARCH=arm64 allnoconfig
-          export ARCH=arm64
-          export CROSS_COMPILE="/usr/bin/aarch64-linux-gnu-"
-          make olddefconfig
-          make -j$(nproc)
+      # - name: build kernel arm64
+      #   if: env.condition == 'true'
+      #   run: |
+      #     cd linux
+      #     make ARCH=arm64 mrproper
+      #     make ARCH=arm64 allnoconfig
+      #     export ARCH=arm64
+      #     export CROSS_COMPILE="/usr/bin/aarch64-linux-gnu-"
+      #     make olddefconfig
+      #     make -j$(nproc)
 
-      - name: post-build kernel arm64
-        if: env.condition == 'true'
-        run: |
-          cd linux
-          make clean
-          rm -rf .config*
+      # - name: post-build kernel arm64
+      #   if: env.condition == 'true'
+      #   run: |
+      #     cd linux
+      #     make clean
+      #     rm -rf .config*
 
       - name: pre-build kernel x86-64
         if: env.condition == 'true'
