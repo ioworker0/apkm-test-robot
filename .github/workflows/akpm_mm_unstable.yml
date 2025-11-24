@@ -1,8 +1,10 @@
 name: AKPM-ROBOT-MM-UNSTABLE
 
+# on:
+#   schedule:
+#   - cron: '*/50 * * * *'  # Runs every 50 minutes.
 on:
-  schedule:
-  - cron: '*/50 * * * *'  # Runs every 50 minutes.
+  workflow_dispatch:
 
 env:
   BRANCH: mm-unstable
